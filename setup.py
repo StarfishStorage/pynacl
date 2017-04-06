@@ -148,14 +148,18 @@ class build_clib(_build_clib):
 
         # Locate our configure script
         configure = abshere("src/libsodium/configure")
+        configure_options = [
+            "--disable-shared", "--enable-static",
+            "--disable-debug", "--disable-dependency-tracking",
+            "--with-pic", "--prefix", os.path.abspath(self.build_clib),
+        ]
+
+        if sys.platform.startswith('sunos'):
+            configure_options.append('--disable-ssp')
 
         # Run ./configure
         subprocess.check_call(
-            [
-                configure, "--disable-shared", "--enable-static",
-                "--disable-debug", "--disable-dependency-tracking",
-                "--with-pic", "--prefix", os.path.abspath(self.build_clib),
-            ],
+            [configure] + configure_options,
             cwd=build_temp,
         )
 
